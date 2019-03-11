@@ -1,0 +1,14 @@
+PySimaticTrends 1.0.x
+
+Requirements:
+	Python 3.5 or newer
+
+Installation:
+	1. unzip PySimaticTrends to a directory
+	2. find if you have pip installed, ussualy in the Python{version}_{platform}/Scripts directory
+	pip install matplotlib
+	
+	note: sometimes it is neccesary to update the pip, do that with the following command:
+	python -m pip install --upgrade pip
+	Good article can be found on https://datatofish.com/upgrade-pip/
+
