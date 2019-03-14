@@ -18,13 +18,11 @@ else:
     # napevno
     filename = cfg.FIXED_FILENAME
 
-dir = "log_files/"
-filename_dir = dir + filename    
-print("Opening filename ",filename_dir)
+print("Opening filename ",filename)
 
 #Otvorenie suboru
 try:
-    fp = open(filename_dir, "r" ,encoding='utf-16') #treba dat to utf-16, inak masaker
+    fp = open(filename, "r" ,encoding='utf-16') #treba dat to utf-16, inak masaker
 
 # obsluha chyby
 #except FileNotFoundError:
@@ -51,5 +49,6 @@ fp.close()
 #koniec
 print('-----------------------------------------')
 print('(c) 2019 by Jakub Vonkomer, VONSCH s.r.o.')
+# keby sme chceli podrzat konzolu
 #input('Press Enter to exit')
 
