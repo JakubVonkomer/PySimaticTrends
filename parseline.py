@@ -54,7 +54,7 @@ def parseline(line):
 
 # ziska farbu grafu
 def getPlotColor(trendNumber):
-    colors = ['r','g','b','c','m','k','lime','tab:brown','sienna','teal','y']
+    colors = ['r','g','b','c','m','k','lime','tab:brown','grey','teal','y']
     countOfColors = len(colors)
     return colors[trendNumber % countOfColors]
 
@@ -97,6 +97,12 @@ def plot_all(singleTrend=True):
         visibility = [line.get_visible() for line in trendsSubplots]
         check = CheckButtons(rax, labels, visibility)
         check.on_clicked(ControlCheckFunc)
+
+        # ofarbenie grafov, index labelov sedi s indexom varName1-ov
+        for label1 in labels:
+            i = labels.index(label1)
+            check.labels[i].set_color(getPlotColor(i))
+        
         #maximalizacia grafu na cele okno
         # pouzivam rady z https://stackoverflow.com/questions/12439588/how-to-maximize-a-plt-show-window-using-python
         mng = plt.get_current_fig_manager()
