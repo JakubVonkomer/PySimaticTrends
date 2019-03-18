@@ -42,7 +42,7 @@ for line in fp:
 
     # kontrola maximalneho poctu importovanych poloziek
     if(i > cfg.MAX_ITEMS_TO_IMPORT):
-        break #prerus
+        break #prerus ak sa dosiahol maximalny pocet
 
 PL.plot_all(cfg.ALL_VARIABLES_IN_SINGLE_TREND) # vykresli grafy
 

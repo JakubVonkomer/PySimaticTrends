@@ -1,16 +1,27 @@
 import matplotlib.pyplot as plt
 from matplotlib.widgets import CheckButtons
+import matplotlib.dates as mdates
 import numpy as np
+import re
+import datetime
 
 #globalne premenne
 varNames = []
 timeStrings = {} #dictionary of arrays
+dateTimes = {} #dictionary of arrays
 varValues = {} #dictionary of arrays
 timeMS_ = {}
 
 # odstranenie uvodzoviek z celeho riadku, nepotrebujeme nikde
 def remove_quotes(str):
     return str.replace('"', '')
+
+# parsovanie datumu a casu
+def datetimefromisoformat(strDateTime):
+    #print('datetimefromisoformat: '+strDateTime) #debug
+    dP = re.split(' |-|:',strDateTime)
+    dateX = datetime.datetime(int(dP[0]),int(dP[1]),int(dP[2]),int(dP[3]),int(dP[4]),int(dP[5]))
+    return dateX
 
 # parsovanie celeho riadku, naplnenie poli
 def parseline(line):
@@ -28,12 +39,12 @@ def parseline(line):
     words_length = len(words) # pocet slov
     if(words_length == 6): #varName nema medzeru
         varName = words[0]
-        timeString = words[1]+words[2]
+        timeString = words[1]+' '+words[2]
         varValue = float(words[3])
         timeMS = float(words[5])
     elif(words_length == 7): #varName ma medzeru
         varName = words[0]+'_'+words[1]
-        timeString = words[2]+words[3]
+        timeString = words[2]+' '+words[3]
         varValue = float(words[4])
         timeMS = float(words[6])
     else: #necakany pocet ???
@@ -46,11 +57,16 @@ def parseline(line):
         timeStrings[varName] = []
         varValues[varName] = []
         timeMS_[varName] = []
+        dateTimes[varName] = []
+
+    #konvertovanie datumu
+    dateTime1 = datetimefromisoformat(timeString)
 
     # pridanie jednotlivych poloziek do pola/dictionary
     timeStrings[varName].append(timeString)
     varValues[varName].append(varValue)
     timeMS_[varName].append(timeMS)
+    dateTimes[varName].append(dateTime1)
 
 # ziska farbu grafu
 def getPlotColor(trendNumber):
@@ -66,12 +82,17 @@ labels = [] # v tomto poli budu jednotlive labely
 def ControlCheckFunc(label):
     index = labels.index(label)
     trendsSubplots[index].set_visible(not trendsSubplots[index].get_visible())
+    # recompute the ax.dataLim
+    #ax.relim()
+    # update ax.viewLim using the new dataLim
+    #ax.autoscale_view()
     plt.draw()
 
 
 # vykreslenie vsetkych grafov
 def plot_all(singleTrend=True):
     global trendsSubplots, labels # modifikujeme globalne premenne, vyuziva ich ControlCheckFunc
+    #global ax,fig
     trend_number = 1
     if(singleTrend): # jeden spolocny graf
  
@@ -79,8 +100,8 @@ def plot_all(singleTrend=True):
         trendNumber = 0
 
         for varName1 in varNames:
-            # timeStrings[varName1]
-            plotTmp, = ax.plot(varValues[varName1], visible=True, lw=2, color=getPlotColor(trendNumber), label=varName1)
+            # nie uplne chapem tej ciarke za plotTmp, ale musi byt
+            plotTmp, = ax.plot(dateTimes[varName1],varValues[varName1], visible=True, lw=2, color=getPlotColor(trendNumber), label=varName1)
             trendsSubplots.append(plotTmp)
             trendNumber += 1
             print('Drawing subtrend '+str(trendNumber)+': '+varName1)
@@ -88,8 +109,20 @@ def plot_all(singleTrend=True):
 
         plt.subplots_adjust(left=0.2)
         plt.suptitle('Trends')
-        plt.xlabel('samples')
+        plt.xlabel('Time')
         plt.ylabel('Values')
+
+        # Xova mierka pre cas
+        #hours = mdates.MinuteLocator(15)   # every hour
+        #mins = mdates.MinuteLocator(5)  # every minute
+        #ax.xaxis.set_major_locator(hours)
+        #ax.xaxis.set_minor_locator(mins)
+
+        # hlavna mierka s datumom, mensia iba cas
+        ax.xaxis.set_major_formatter(mdates.DateFormatter("%d.%m %H:%M:%S"))
+        ax.xaxis.set_minor_formatter(mdates.DateFormatter("%H:%M:%S"))
+        
+        _=plt.xticks(rotation=45)   
  
         # Make checkbuttons with all plotted lines with correct visibility
         rax = plt.axes([0.01, 0.3, 0.15, 0.3])
@@ -114,9 +147,10 @@ def plot_all(singleTrend=True):
         for varName1 in varNames:
             fig = plt.figure(trendNumber)  # an empty figure with no axes
             plt.suptitle('Trend of '+varName1)  # Add a title so we know which it is
-            plt.plot(varValues[varName1])
-            plt.xlabel('samples')
+            plt.plot(dateTimes[varName1], varValues[varName1])
+            plt.xlabel('Time')
             plt.ylabel('Value of '+varName1)
+            _=plt.xticks(rotation=45)   
             fig.show() #umozni vykreslit trendy paralelne, plt.show() by vykreslilo druhy az po zavreti prveho
             trendNumber+=1
             print('Drawing trend '+str(trendNumber)+': '+varName1)
