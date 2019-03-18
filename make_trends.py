@@ -33,15 +33,18 @@ except Exception as e:
 # parsing file    
 i = 0
 for line in fp:
-    if(i > 0):
-        PL.parseline(line)
+
+    # kontrola na IGNORE_VARNAMES
+    ignored_line = [line.find(ignoreVarname1) for ignoreVarname1 in cfg.IGNORE_VARNAMES]
+    if(i > 0 and (not 1 in ignored_line)):
+        PL.parseline(line) # jadro
     i=i+1
 
     # kontrola maximalneho poctu importovanych poloziek
     if(i > cfg.MAX_ITEMS_TO_IMPORT):
         break #prerus
 
-PL.plot_all() # vykresli
+PL.plot_all(cfg.ALL_VARIABLES_IN_SINGLE_TREND) # vykresli grafy
 
 #zatvorenie suboru
 fp.close()
