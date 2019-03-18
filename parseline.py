@@ -141,6 +141,9 @@ def plot_all(singleTrend=True):
         mng = plt.get_current_fig_manager()
         mng.window.state('zoomed') #works fine on Windows!
         #mng.frame.Maximize(True)
+
+        #grid
+        ax.grid(b=True, which='both', color='#cccccc', linestyle='--')
         plt.show()
     else: # viac grafov
         trendNumber = 0
