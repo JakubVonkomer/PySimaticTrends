@@ -2,6 +2,7 @@ import sys
 #import os
 import parseline as PL
 import version as vs
+from file_dialog import openFileDialog
 import config as cfg
 
 print (vs.appName + ' ' + vs.version)
@@ -13,7 +14,8 @@ print ('')
 if len(sys.argv) > 1:
     filename = sys.argv[1]
 elif(cfg.ASK_FOR_FILENAME):
-    filename = input("Enter file name: ")
+    #filename = input("Enter file name: ")
+    filename = openFileDialog()
 else:
     # napevno
     filename = cfg.FIXED_FILENAME

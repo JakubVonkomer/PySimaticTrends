@@ -1,7 +1,7 @@
 # config.py - configuration file
 
 # ma sa pytat na lokalitu suboru
-ASK_FOR_FILENAME = False #prepis na True ak treba
+ASK_FOR_FILENAME = True # ak False pouzije pevny subor
 
 #pevny nazov suboru, v adresari log_files/
 FIXED_FILENAME = "log_files/Data_log0.txt"
