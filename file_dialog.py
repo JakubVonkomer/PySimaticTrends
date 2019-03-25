@@ -4,7 +4,8 @@ from tkinter import filedialog
 # otvori file dialog a vrati meno suboru
 def openFileDialog():
     root = tk.Tk()
-    root.withdraw()
+    root.withdraw() # skryje prazdne GUI okno, resp. sa nevykresli
 
-    file_path = filedialog.askopenfilename()
+    file_path = filedialog.askopenfilename() # samoteny dialog
+    root.destroy() # potrebne, inak zamrzne okno, treba aplikaciu zakillovat
     return file_path
