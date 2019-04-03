@@ -33,6 +33,7 @@ def parseline(line):
     timeString = ''
     varValue = 0
     timeMS = 0
+    varName_delimiter = '_'
 
     #[0] - VarName, [1]+[2] - TimeString, [3] - VarValue, [4] - Validity, [5] Time_ms
     # niekedy sa varName sklada z dvoch slov (ma medzeru)
@@ -42,14 +43,14 @@ def parseline(line):
         timeString = words[1]+' '+words[2]
         varValue = float(words[3])
         timeMS = float(words[5])
-    elif(words_length == 7): #varName ma medzeru
-        varName = words[0]+'_'+words[1]
-        timeString = words[2]+' '+words[3]
-        varValue = float(words[4])
-        timeMS = float(words[6])
-    else: #necakany pocet ???
-        print('Assert failed: length of words is '+str(words_length))
-        print(words)
+    else: #vela medzier
+        timeMS = float(words[words_length-1])
+        varValue = float(words[words_length-3])
+        timeString = words[words_length-5]+' '+words[words_length-4]
+        varName = varName_delimiter.join(words[0:(words_length-5)])
+        		
+        #print('Assert failed: length of words is '+str(words_length))
+        #print(words)
 
     #test ci uz sme mali dany tag   
     if(varName not in varNames): # zadefinovanie poli pre dany key v dictionary
