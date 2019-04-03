@@ -93,15 +93,15 @@ def ControlCheckFunc(label):
 # vykreslenie vsetkych grafov
 def plot_all(singleTrend=True):
     global trendsSubplots, labels # modifikujeme globalne premenne, vyuziva ich ControlCheckFunc
-    #global ax,fig
+
     trend_number = 1
     if(singleTrend): # jeden spolocny graf
  
-        fig, ax = plt.subplots() # ani za svet neviem preco fig treba, ale bez toho mam AttributeError: 'tuple' object has no attribute 'plot'
+        fig, ax = plt.subplots() # fig treba lebo subplots vracia tuple
         trendNumber = 0
 
         for varName1 in varNames:
-            # nie uplne chapem tej ciarke za plotTmp, ale musi byt
+            # vracia tuple, preto ciarka za plotTmp
             plotTmp, = ax.plot(dateTimes[varName1],varValues[varName1], visible=True, lw=2, color=getPlotColor(trendNumber), label=varName1)
             trendsSubplots.append(plotTmp)
             trendNumber += 1
