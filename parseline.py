@@ -38,19 +38,13 @@ def parseline(line):
     #[0] - VarName, [1]+[2] - TimeString, [3] - VarValue, [4] - Validity, [5] Time_ms
     # niekedy sa varName sklada z dvoch slov (ma medzeru)
     words_length = len(words) # pocet slov
-    if(words_length == 6): #varName nema medzeru
-        varName = words[0]
-        timeString = words[1]+' '+words[2]
-        varValue = float(words[3])
-        timeMS = float(words[5])
-    else: #vela medzier
+    if(words_length < 6):
+        return # ingorujeme chybne a divne riadky
+    else: #jedna a viac medzier vo VarName
         timeMS = float(words[words_length-1])
         varValue = float(words[words_length-3])
         timeString = words[words_length-5]+' '+words[words_length-4]
         varName = varName_delimiter.join(words[0:(words_length-5)])
-        		
-        #print('Assert failed: length of words is '+str(words_length))
-        #print(words)
 
     #test ci uz sme mali dany tag   
     if(varName not in varNames): # zadefinovanie poli pre dany key v dictionary
@@ -159,7 +153,3 @@ def plot_all(singleTrend=True):
             trendNumber+=1
             print('Drawing trend '+str(trendNumber)+': '+varName1)
             # sprava do konzoly a pocitadlo
-         
-
-        
-	
