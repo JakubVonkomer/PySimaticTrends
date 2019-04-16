@@ -102,7 +102,7 @@ def plot_all(singleTrend=True):
             print('Drawing subtrend '+str(trendNumber)+': '+varName1)
             #break
 
-        plt.subplots_adjust(left=0.2)
+        plt.subplots_adjust(left=0.28) #odkade nalavo zacina graf, treba nechat offset na legendu
         plt.suptitle('Trends')
         plt.xlabel('Time')
         plt.ylabel('Values')
@@ -120,7 +120,7 @@ def plot_all(singleTrend=True):
         _=plt.xticks(rotation=45)   
  
         # Make checkbuttons with all plotted lines with correct visibility
-        rax = plt.axes([0.01, 0.3, 0.15, 0.3])
+        rax = plt.axes([0.01, 0.3, 0.20, 0.3]) # legenda offset zlava, zdola, sirka, vyska
         labels = [str(line.get_label()) for line in trendsSubplots]
         visibility = [line.get_visible() for line in trendsSubplots]
         check = CheckButtons(rax, labels, visibility)
@@ -130,6 +130,12 @@ def plot_all(singleTrend=True):
         for label1 in labels:
             i = labels.index(label1)
             check.labels[i].set_color(getPlotColor(i))
+            check.labels[i].set_fontsize(8)
+            x,y = check.labels[i].get_position()
+            x_new = x - 0.1 # posun dolava
+            if(x_new <= 0):
+                x_new = 0.01
+            check.labels[i].set_x(x_new)
         
         #maximalizacia grafu na cele okno
         # pouzivam rady z https://stackoverflow.com/questions/12439588/how-to-maximize-a-plt-show-window-using-python

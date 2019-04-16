@@ -53,7 +53,7 @@ fp.close()
 
 #koniec
 print('-----------------------------------------')
-print('(c) 2019 by Jakub Vonkomer, VONSCH s.r.o.')
+print('(c) 2019 by VONSCH s.r.o.')
 # keby sme chceli podrzat konzolu
 #input('Press Enter to exit')
 
