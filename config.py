@@ -15,5 +15,8 @@ ALL_VARIABLES_IN_SINGLE_TREND = True
 #ignorovat varName
 IGNORE_VARNAMES = ['$RT_OFF$']
 
+#vyber jazyka
+LANG_DEFAULT = 'PL'
+
 
 

@@ -4,6 +4,7 @@ import matplotlib.dates as mdates
 import numpy as np
 import re
 import datetime
+import tag_names as tn
 
 #globalne premenne
 varNames = []
@@ -83,6 +84,12 @@ def ControlCheckFunc(label):
     #ax.autoscale_view()
     plt.draw()
 
+# zmena nazvu tagu, mozne premenovanie alebo preklad nazvu tagu
+def TranslateTagName(tagName1):
+    if tagName1 in tn.tagNames:
+        return tn.tagNames[tagName1]
+    else:
+        return tagName1
 
 # vykreslenie vsetkych grafov
 def plot_all(singleTrend=True):
@@ -96,10 +103,10 @@ def plot_all(singleTrend=True):
 
         for varName1 in varNames:
             # vracia tuple, preto ciarka za plotTmp
-            plotTmp, = ax.plot(dateTimes[varName1],varValues[varName1], visible=True, lw=2, color=getPlotColor(trendNumber), label=varName1)
+            plotTmp, = ax.plot(dateTimes[varName1],varValues[varName1], visible=True, lw=2, color=getPlotColor(trendNumber), label=TranslateTagName(varName1))
             trendsSubplots.append(plotTmp)
             trendNumber += 1
-            print('Drawing subtrend '+str(trendNumber)+': '+varName1)
+            print('Drawing subtrend '+str(trendNumber)+': '+varName1 + ' alias ' + TranslateTagName(varName1))
             #break
 
         plt.subplots_adjust(left=0.28) #odkade nalavo zacina graf, treba nechat offset na legendu
