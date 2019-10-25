@@ -103,7 +103,7 @@ def plot_all(singleTrend=True):
 
         for varName1 in varNames:
             # vracia tuple, preto ciarka za plotTmp
-            plotTmp, = ax.plot(dateTimes[varName1],varValues[varName1], visible=True, lw=2, color=getPlotColor(trendNumber), label=TranslateTagName(varName1))
+            plotTmp, = ax.step(dateTimes[varName1],varValues[varName1], visible=True, lw=2, color=getPlotColor(trendNumber), label=TranslateTagName(varName1))
             trendsSubplots.append(plotTmp)
             trendNumber += 1
             print('Drawing subtrend '+str(trendNumber)+': '+varName1 + ' alias ' + TranslateTagName(varName1))
@@ -158,7 +158,7 @@ def plot_all(singleTrend=True):
         for varName1 in varNames:
             fig = plt.figure(trendNumber)  # an empty figure with no axes
             plt.suptitle('Trend of '+varName1)  # Add a title so we know which it is
-            plt.plot(dateTimes[varName1], varValues[varName1])
+            plt.step(dateTimes[varName1], varValues[varName1])
             plt.xlabel('Time')
             plt.ylabel('Value of '+varName1)
             _=plt.xticks(rotation=45)   
