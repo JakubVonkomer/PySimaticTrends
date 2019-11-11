@@ -1,59 +1,111 @@
-import sys
-#import os
-import parseline as PL
-import version as vs
-from file_dialog import openFileDialog
-import config as cfg
+# libraries
+import matplotlib.pyplot as plt
+from matplotlib.widgets import CheckButtons
+import matplotlib.dates as mdates
 
-print (vs.appName + ' ' + vs.version)
-print ('')
+# project files
+import tag_names as tn
+from common_vars import *
 
-#print (sys.argv)
+# ziska farbu grafu
+def getPlotColor(trendNumber):
+    colors = ['r','g','b','c','m','k','lime','tab:brown','grey','teal','y']
+    countOfColors = len(colors)
+    return colors[trendNumber % countOfColors]
 
-# argv[1] je nazov suboru na otvorenie
-if len(sys.argv) > 1:
-    filename = sys.argv[1]
-elif(cfg.ASK_FOR_FILENAME):
-    #filename = input("Enter file name: ")
-    filename = openFileDialog()
-else:
-    # napevno
-    filename = cfg.FIXED_FILENAME
+#globalne premenne, pouzivane viacerymi funkciami
+trendsSubplots = [] # v tomto poli budu jednotlive subploty
+labels = [] # v tomto poli budu jednotlive labely
 
-print("Opening filename ",filename)
+# zaskrtavanie poloziek    
+def ControlCheckFunc(label):
+    index = labels.index(label)
+    trendsSubplots[index].set_visible(not trendsSubplots[index].get_visible())
+    # recompute the ax.dataLim
+    #ax.relim()
+    # update ax.viewLim using the new dataLim
+    #ax.autoscale_view()
+    plt.draw()
 
-#Otvorenie suboru
-try:
-    fp = open(filename, "r" ,encoding='utf-16') #treba dat to utf-16, inak masaker
+# zmena nazvu tagu, mozne premenovanie alebo preklad nazvu tagu
+def TranslateTagName(tagName1):
+    if tagName1 in tn.tagNames:
+        return tn.tagNames[tagName1]
+    else:
+        return tagName1
 
-# obsluha chyby
-#except FileNotFoundError:
-except Exception as e:
-    print(e)
-    sys.exit() #ukoncenie skriptu
+# vykreslenie vsetkych grafov
+def plot_all(singleTrend=True):
+    global trendsSubplots, labels # modifikujeme globalne premenne, vyuziva ich ControlCheckFunc
 
-# parsing file    
-i = 0
-for line in fp:
+    trend_number = 1
+    if(singleTrend): # jeden spolocny graf
+ 
+        fig, ax = plt.subplots() # fig treba lebo subplots vracia tuple
+        trendNumber = 0
 
-    # kontrola na IGNORE_VARNAMES
-    ignored_line = [line.find(ignoreVarname1) for ignoreVarname1 in cfg.IGNORE_VARNAMES]
-    if(i > 0 and (not 1 in ignored_line)):
-        PL.parseline(line) # jadro
-    i=i+1
+        for varName1 in varNames:
+            # vracia tuple, preto ciarka za plotTmp
+            plotTmp, = ax.step(dateTimes[varName1],varValues[varName1], visible=True, lw=2, color=getPlotColor(trendNumber), label=TranslateTagName(varName1))
+            trendsSubplots.append(plotTmp)
+            trendNumber += 1
+            print('Drawing subtrend '+str(trendNumber)+': '+varName1 + ' alias ' + TranslateTagName(varName1))
+            #break
 
-    # kontrola maximalneho poctu importovanych poloziek
-    if(i > cfg.MAX_ITEMS_TO_IMPORT):
-        break #prerus ak sa dosiahol maximalny pocet
+        plt.subplots_adjust(left=0.28) #odkade nalavo zacina graf, treba nechat offset na legendu
+        plt.suptitle('Trends')
+        plt.xlabel('Time')
+        plt.ylabel('Values')
 
-PL.plot_all(cfg.ALL_VARIABLES_IN_SINGLE_TREND) # vykresli grafy
+        # Xova mierka pre cas
+        #hours = mdates.MinuteLocator(15)   # every hour
+        #mins = mdates.MinuteLocator(5)  # every minute
+        #ax.xaxis.set_major_locator(hours)
+        #ax.xaxis.set_minor_locator(mins)
 
-#zatvorenie suboru
-fp.close()
+        # hlavna mierka s datumom, mensia iba cas
+        ax.xaxis.set_major_formatter(mdates.DateFormatter("%d.%m %H:%M:%S"))
+        ax.xaxis.set_minor_formatter(mdates.DateFormatter("%H:%M:%S"))
+        
+        _=plt.xticks(rotation=45)   
+ 
+        # Make checkbuttons with all plotted lines with correct visibility
+        rax = plt.axes([0.01, 0.3, 0.20, 0.3]) # legenda offset zlava, zdola, sirka, vyska
+        labels = [str(line.get_label()) for line in trendsSubplots]
+        visibility = [line.get_visible() for line in trendsSubplots]
+        check = CheckButtons(rax, labels, visibility)
+        check.on_clicked(ControlCheckFunc)
 
-#koniec
-print('-----------------------------------------')
-print('(c) 2019 by VONSCH s.r.o.')
-# keby sme chceli podrzat konzolu
-#input('Press Enter to exit')
+        # ofarbenie grafov, index labelov sedi s indexom varName1-ov
+        for label1 in labels:
+            i = labels.index(label1)
+            check.labels[i].set_color(getPlotColor(i))
+            check.labels[i].set_fontsize(8)
+            x,y = check.labels[i].get_position()
+            x_new = x - 0.1 # posun dolava
+            if(x_new <= 0):
+                x_new = 0.01
+            check.labels[i].set_x(x_new)
+        
+        #maximalizacia grafu na cele okno
+        # pouzivam rady z https://stackoverflow.com/questions/12439588/how-to-maximize-a-plt-show-window-using-python
+        mng = plt.get_current_fig_manager()
+        mng.window.state('zoomed') #works fine on Windows!
+        #mng.frame.Maximize(True)
 
+        #grid
+        ax.grid(b=True, which='both', color='#cccccc', linestyle='--')
+        plt.show()
+    else: # viac grafov
+        trendNumber = 0
+        for varName1 in varNames:
+            fig = plt.figure(trendNumber)  # an empty figure with no axes
+            plt.suptitle('Trend of '+varName1)  # Add a title so we know which it is
+            plt.step(dateTimes[varName1], varValues[varName1])
+            plt.xlabel('Time')
+            plt.ylabel('Value of '+varName1)
+            _=plt.xticks(rotation=45)   
+            fig.show() #umozni vykreslit trendy paralelne, plt.show() by vykreslilo druhy az po zavreti prveho
+            trendNumber+=1
+            print('Drawing trend '+str(trendNumber)+': '+varName1)
+            # sprava do konzoly a pocitadlo
