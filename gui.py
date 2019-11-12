@@ -85,6 +85,9 @@ class AppGUI:
         # load texts
         self.LoadTexts()
 
+        # loads dictionary of tag names
+        tag_names.LoadTagNames(self.GetIniParam('lang'))
+
         # buttony
         self.openButton = tk.Button(self.window, text = self.text_openButton, command=self.openButton_click, fg = "black")
         self.openButton.grid(row=0, column=0, padx=self.paddingNSWE, pady=self.paddingNSWE, sticky=tk.E+tk.N)# 'fg - foreground' is used to color the contents
@@ -200,5 +203,6 @@ class AppGUI:
     def on_closing(self):
         # save ini
         self.SaveIni()
+        print('')
         print('Closing application...')
         self.window.destroy()
