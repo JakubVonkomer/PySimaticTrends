@@ -29,6 +29,12 @@ def ControlCheckFunc(label):
     #ax.autoscale_view()
     plt.draw()
 
+# clears plot globals, before new trend is drawn
+def ClearPlotGlobals():
+    global trendsSubplots, labels
+    trendsSubplots.clear()
+    labels.clear()
+
 # zmena nazvu tagu, mozne premenovanie alebo preklad nazvu tagu
 def TranslateTagName(tagName1):
     if tagName1 in tn.tagNames:
@@ -40,11 +46,16 @@ def TranslateTagName(tagName1):
 def plot_all(singleTrend=True):
     global trendsSubplots, labels # modifikujeme globalne premenne, vyuziva ich ControlCheckFunc
 
+    ClearPlotGlobals() # vymaze stare data
+
     trend_number = 1
     if(singleTrend): # jeden spolocny graf
  
         fig, ax = plt.subplots() # fig treba lebo subplots vracia tuple
         trendNumber = 0
+
+        print('') # empty line
+        print('Drawing new trend')
 
         for varName1 in varNames:
             # vracia tuple, preto ciarka za plotTmp
