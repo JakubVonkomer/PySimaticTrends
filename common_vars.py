@@ -1,4 +1,6 @@
-﻿#globalne premenne
+﻿# common vars for plots
+
+#globalne premenne
 varNames = []
 #timeStrings = {} #dictionary of arrays
 dateTimes = {} #dictionary of arrays
@@ -12,3 +14,9 @@ def AddNewVarName(varName):
     varValues[varName] = []
     #timeMS_[varName] = []
     dateTimes[varName] = []
+
+# clear all vars, before new trend
+def ClearVars():
+    varNames.clear()
+    dateTimes.clear()
+    varValues.clear()

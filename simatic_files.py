@@ -1,9 +1,15 @@
-﻿import config as cfg
+﻿# support for simatic panel .txt logs
+
 import re
 import datetime
 import numpy as np
 
 from common_vars import *
+
+# fixed configuration for Simatic Weintek
+MAX_ITEMS_TO_IMPORT = 1e6
+
+IGNORE_VARNAMES = ['$RT_OFF$'] #ignorovat varName
 
 # odstranenie uvodzoviek z celeho riadku, nepotrebujeme nikde
 def remove_quotes(str):
@@ -60,21 +66,21 @@ def OpenSimaticTXTFile(filename):
     #except FileNotFoundError:
     except Exception as e:
         print(e)
-        return false
+        return False
 
     # parsing file    
     i = 0
     for line in fp:
 
         # kontrola na IGNORE_VARNAMES
-        ignored_line = [line.find(ignoreVarname1) for ignoreVarname1 in cfg.IGNORE_VARNAMES]
+        ignored_line = [line.find(ignoreVarname1) for ignoreVarname1 in IGNORE_VARNAMES]
         if(i > 0 and (not 1 in ignored_line)):
             parseline(line) # jadro
         i=i+1
 
         # kontrola maximalneho poctu importovanych poloziek
-        if(i > cfg.MAX_ITEMS_TO_IMPORT):
+        if(i > MAX_ITEMS_TO_IMPORT):
             break #prerus ak sa dosiahol maximalny pocet
 
     fp.close() # ukoncenie suboru
-    return true
+    return True

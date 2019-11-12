@@ -1,3 +1,5 @@
+# drawing plots using matplotlib
+
 # libraries
 import matplotlib.pyplot as plt
 from matplotlib.widgets import CheckButtons

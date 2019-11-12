@@ -1,7 +1,6 @@
-﻿from common_vars import *
+﻿# support for weintek panel .dtl logs
 
-# analyza suboru 20190813.dtl
-
+from common_vars import *
 import struct # podpora binarnych struktur
 #import sys
 from datetime import datetime # datumove funkcie

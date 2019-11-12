@@ -1,2 +1,7 @@
+# information about application
 appName = "PySimaticTrends"
-version = "3.0.0 alpha"
+appVersion = "3.0.0 alpha"
+appCopyrightInfo = "(c) 2019 by VONSCH s.r.o."
+
+# derived info
+appTitle = appName + " " + appVersion

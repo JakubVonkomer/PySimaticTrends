@@ -1,3 +1,5 @@
+# gui and config processing
+
 # gui
 import tkinter as tk
 from tkinter import ttk
@@ -9,6 +11,9 @@ from configparser import ConfigParser
 
 # project files
 import version as vs
+import prepare_trends as ppt
+import tag_names
+import common_vars
 
 class AppGUI:
 
@@ -115,7 +120,9 @@ class AppGUI:
 
     # kliknutie na openButton
     def openButton_click(self):
-        filename = self.OpenFileDialogGetFileName()
+        common_vars.ClearVars() # erases all data before opening new file
+        filename = self.OpenFileDialogGetFileName() # open dialog
+        ppt.OpenTrendFile(filename) #opens file
         
 
     # kliknutie na addButton
@@ -133,6 +140,9 @@ class AppGUI:
         # load and change the texts
         self.LoadTexts()
         self.ChangeTexts()
+
+        # loads dictionary of tag names
+        tag_names.LoadTagNames(lang) 
 
         # debug info to console
         if event: # <-- this works only with bind because `command=` doesn't send event
@@ -192,9 +202,3 @@ class AppGUI:
         self.SaveIni()
         print('Closing application...')
         self.window.destroy()
-
-
-# spustame
-
-app = AppGUI()
-app.run()
