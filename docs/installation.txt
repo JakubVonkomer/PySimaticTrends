@@ -1,7 +1,7 @@
-PySimaticTrends 1.0.x
+PySimaticTrends 3.0.x
 
 Requirements:
-	Python 3.5 or newer
+	Python 3.6 or newer
 
 Installation:
 	1. unzip PySimaticTrends to a directory
@@ -10,5 +10,5 @@ Installation:
 	
 	note: sometimes it is neccesary to update the pip, do that with the following command:
 	python -m pip install --upgrade pip
-	Good article can be found on https://datatofish.com/upgrade-pip/
+	Good article can be found \t https://datatofish.com/upgrade-pip/
 
