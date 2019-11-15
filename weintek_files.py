@@ -1,9 +1,9 @@
 ﻿# support for weintek panel .dtl logs
-
-from common_vars import *
 import struct # podpora binarnych struktur
 #import sys
 from datetime import datetime # datumove funkcie
+
+import common_vars
 
 ## globalne premenne`
 nrVars = 0 # pocet premennych
@@ -42,12 +42,14 @@ def ProcessDTLValue(datastruct, index):
     item1 = datastruct[index]
     #print('datastruct[',index,'] = ',datastruct[index],'Format=',formatStructType[index])
 
-    if(nrVars > 1):
+    # multiple variable files can be middle endian only
+    if(nrVars > 1 and common_vars.useMiddleEndianFor32bitVars):
         if(formatStructType[index] == 'f' or formatStructType[index] == 'L' or formatStructType[index] == 'l'): # ak je to float, alebo (u)int32
             item1 = swapWordsInt32(item1)
             
-            if(formatStructType[index] == 'f'):
-                item1 = reinterpretAsFloat(item1)
+    # recast as float
+    if(formatStructType[index] == 'f'):
+        item1 = reinterpretAsFloat(item1)
                     
     return item1
 
@@ -113,7 +115,7 @@ def OpenWeintekDtlFile(filename):
         nameRawData = fp.read(nameLength[0])
         name = nameRawData.decode('utf-8')
         # pridaj zaznam a vytvor polia
-        AddNewVarName(name)
+        common_vars.AddNewVarName(name)
         #print('Length: ',nameLength[0], 'Name: ',name)
 
     # nacitanie samotnych dat
@@ -139,10 +141,10 @@ def OpenWeintekDtlFile(filename):
         
         # prejdenie jednotlivych dat v jednom riadku struktury
         for j in range(1,nrVars):
-            actualName = varNames[j-2] # prve dva stlpce su datetime a ms, preto posuvame
-            dateTimes[actualName].append(timestamp)
+            actualName = common_vars.varNames[j-2] # prve dva stlpce su datetime a ms, preto posuvame
+            common_vars.dateTimes[actualName].append(timestamp)
             value = ProcessDTLValue(data,j)
-            varValues[actualName].append(value)
+            common_vars.varValues[actualName].append(value)
 
     #zatvorenie suboru
     fp.close()

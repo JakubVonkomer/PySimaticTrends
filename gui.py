@@ -77,7 +77,7 @@ class AppGUI:
         self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
 
         # create the application
-        print("Starting GUI for ", vs.appTitle)
+        print("Starting GUI...")
 
         # load configuration
         self.LoadIni()
@@ -99,9 +99,7 @@ class AppGUI:
         self.labelSettings.grid(row=2, column=0, columnspan=2, padx=self.paddingNSWE, pady=self.paddingNSWE, sticky=tk.W+tk.N)
 
         # use Middle-Endian (Weintek block read)
-        #val1 = GetIniParam('useMiddleEndian') FIXME
-        #self.useMiddleEndian = tk.IntVar(value=int(val1)) # use Middle Endian by default
-        self.useMiddleEndianCheckBox = tk.Checkbutton(self.window, text=self.text_swapWords32bitVars, variable=self.useMiddleEndian) # default je ON
+        self.useMiddleEndianCheckBox = tk.Checkbutton(self.window, text=self.text_swapWords32bitVars, variable=self.useMiddleEndianIntVar) # default je ON
         self.useMiddleEndianCheckBox.grid(row=4,column=0,columnspan=2)
 
         # language label
@@ -124,6 +122,7 @@ class AppGUI:
     # kliknutie na openButton
     def openButton_click(self):
         common_vars.ClearVars() # erases all data before opening new file
+        self.UpdateUseMiddleEndianVars() # updates the variable
         filename = self.OpenFileDialogGetFileName() # open dialog
         ppt.OpenTrendFile(filename) #opens file
         
@@ -178,14 +177,19 @@ class AppGUI:
             useMiddleEndianLocal = (self.configObj.getboolean(section, 'useMiddleEndian'))
 
         # naplnime useMiddleEndian, pouziva sa neskor pri inicializacii checkbuttonu
-        self.useMiddleEndian = tk.IntVar(value=int(useMiddleEndianLocal))
+        self.useMiddleEndianIntVar = tk.IntVar(value=int(useMiddleEndianLocal))
+        self.UpdateUseMiddleEndianVars()
+        
+    # update global variable
+    def UpdateUseMiddleEndianVars(self):
+        common_vars.SetMiddleEndianUsage(bool(self.useMiddleEndianIntVar.get())) # setting the global variable
 
     # save ini file
     def SaveIni(self):
 
         # deal with useMiddleEndian, different formats
         section = self.configSettings['defaultSection']
-        useMiddleEndianBool = bool(self.useMiddleEndian.get())
+        useMiddleEndianBool = bool(self.useMiddleEndianIntVar.get())
         self.configObj.set(section,'useMiddleEndian', str(useMiddleEndianBool)) # double type conversion, wants boolean in form of string
         
         # write all configuration to file

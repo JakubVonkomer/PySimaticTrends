@@ -7,7 +7,8 @@ import gui
 
 import os
 
-print (vs.appTitle)
+print (vs.appTitle) # print application name
+print ('') # empty line
 
 app = gui.AppGUI()
 app.run()
