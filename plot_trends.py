@@ -19,6 +19,22 @@ def getPlotColor(trendNumber):
 trendsSubplots = [] # v tomto poli budu jednotlive subploty
 labels = [] # v tomto poli budu jednotlive labely
 
+# calculate yLim, manual autoscale for CheckButtons
+def CalcYLim():
+    yMin = 0 #min
+    yMax = 0 #max
+    for line in trendsSubplots:
+        if(line.get_visible()):
+            yMin = min(yMin,min(line.get_ydata()))
+            yMax = max(yMax,max(line.get_ydata()))
+
+    if(yMin == yMax):
+        yMax = yMin + 1 # different values, relative might be better if not zero
+
+    relScaleExpand = 1.02 # not set to exact number
+
+    return yMin * (1/relScaleExpand),(yMax*relScaleExpand)
+
 # zaskrtavanie poloziek    
 def ControlCheckFunc(label):
     index = labels.index(label)
@@ -27,6 +43,10 @@ def ControlCheckFunc(label):
     #ax.relim()
     # update ax.viewLim using the new dataLim
     #ax.autoscale_view()
+    
+    #plt.autoscale(enable=True, axis='both')
+    yMin,yMax = CalcYLim()
+    ax.set_ylim(bottom=yMin,top=yMax) # sets new Y limits
     plt.draw()
 
 # clears plot globals, before new trend is drawn
@@ -44,7 +64,7 @@ def TranslateTagName(tagName1):
 
 # vykreslenie vsetkych grafov
 def plot_all(singleTrend=True):
-    global trendsSubplots, labels # modifikujeme globalne premenne, vyuziva ich ControlCheckFunc
+    global trendsSubplots, labels, ax, fig # modifikujeme globalne premenne, vyuziva ich ControlCheckFunc
 
     ClearPlotGlobals() # vymaze stare data
 
@@ -83,7 +103,8 @@ def plot_all(singleTrend=True):
         _=plt.xticks(rotation=45)   
  
         # Make checkbuttons with all plotted lines with correct visibility
-        rax = plt.axes([0.01, 0.3, 0.20, 0.3]) # legenda offset zlava, zdola, sirka, vyska
+        legendHeight = 0.015 * len(varNames) + 0.05 # height legend, estimation
+        rax = plt.axes([0.01, 0.3, 0.20, legendHeight]) # legenda offset zlava, zdola, sirka, vyska
         labels = [str(line.get_label()) for line in trendsSubplots]
         visibility = [line.get_visible() for line in trendsSubplots]
         check = CheckButtons(rax, labels, visibility)
