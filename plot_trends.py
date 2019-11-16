@@ -11,7 +11,7 @@ from common_vars import *
 
 # ziska farbu grafu
 def getPlotColor(trendNumber):
-    colors = ['r','g','b','c','m','k','lime','tab:brown','grey','teal','y']
+    colors = ['r','g','b','c','m','k','lime','tab:brown','grey','teal','y','tab:orange','tab:pink','navy','maroon']
     countOfColors = len(colors)
     return colors[trendNumber % countOfColors]
 
