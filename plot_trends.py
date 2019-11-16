@@ -29,11 +29,14 @@ def CalcYLim():
             yMax = max(yMax,max(line.get_ydata()))
 
     if(yMin == yMax):
-        yMax = yMin + 1 # different values, relative might be better if not zero
+        if(yMin == 0):
+            yMax = yMin+1 # zeros, let's make it to <0,1>
+        else:
+            yMax = max(yMin * 1.01,) # different values, relative might be better if not zero
 
-    relScaleExpand = 1.02 # not set to exact number
+    relScaleExpandUpDown = 0.02 * (yMax-yMin) # 2% of the range bottom and up
 
-    return yMin * (1/relScaleExpand),(yMax*relScaleExpand)
+    return (yMin-relScaleExpandUpDown) ,(yMax+relScaleExpandUpDown)
 
 # zaskrtavanie poloziek    
 def ControlCheckFunc(label):
