@@ -42,13 +42,15 @@ def ProcessDTLValue(datastruct, index):
     item1 = datastruct[index]
     #print('datastruct[',index,'] = ',datastruct[index],'Format=',formatStructType[index])
 
+    fsIndex = index # timestamp a ms su prve polozky struktury, prve data su na indexe 2
+
     # multiple variable files can be middle endian only
     if(nrVars > 1 and common_vars.useMiddleEndianFor32bitVars):
-        if(formatStructType[index] == 'f' or formatStructType[index] == 'L' or formatStructType[index] == 'l'): # ak je to float, alebo (u)int32
+        if(formatStructType[fsIndex] == 'f' or formatStructType[fsIndex] == 'L' or formatStructType[fsIndex] == 'l'): # ak je to float, alebo (u)int32
             item1 = swapWordsInt32(item1)
             
     # recast as float
-    if(formatStructType[index] == 'f'):
+    if(formatStructType[fsIndex] == 'f'):
         item1 = reinterpretAsFloat(item1)
                     
     return item1
@@ -140,10 +142,10 @@ def OpenWeintekDtlFile(filename):
         timestamp = datetime.utcfromtimestamp(data[0]) # cas by sme mali
         
         # prejdenie jednotlivych dat v jednom riadku struktury
-        for j in range(1,nrVars):
-            actualName = common_vars.varNames[j-2] # prve dva stlpce su datetime a ms, preto posuvame
+        for j in range(0,nrVars):
+            actualName = common_vars.varNames[j] # prve dva stlpce su datetime a ms, preto posuvame #TU JE PROBLEM, FIXME
             common_vars.dateTimes[actualName].append(timestamp)
-            value = ProcessDTLValue(data,j)
+            value = ProcessDTLValue(data,j+2) #prve hodnoty v data strukture su od indexu 2
             common_vars.varValues[actualName].append(value)
 
     #zatvorenie suboru
