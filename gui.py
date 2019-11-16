@@ -20,6 +20,7 @@ class AppGUI:
     # languages
     languageChoices = ["English","Polski"] #,"Русский"
     languageCodes = ["EN","PL"]
+    openedFileName = '' #actually opened filename
 
     paddingNSWE = 20 # default padding on all sides
 
@@ -123,9 +124,8 @@ class AppGUI:
     def openButton_click(self):
         common_vars.ClearVars() # erases all data before opening new file
         self.UpdateUseMiddleEndianVars() # updates the variable
-        filename = self.OpenFileDialogGetFileName() # open dialog
-        ppt.OpenTrendFile(filename) #opens file
-        
+        self.openedFileName = self.OpenFileDialogGetFileName() # open dialog
+        ppt.OpenTrendFile(self.openedFileName) #opens file
 
     # kliknutie na addButton
     def addButton_click(self):
@@ -152,7 +152,7 @@ class AppGUI:
 
     # otvori dialog a vrati nazov suboru
     def OpenFileDialogGetFileName(self):
-        file_path = filedialog.askopenfilename() # samoteny dialog
+        file_path = filedialog.askopenfilename(filetypes = (("Supported HMI panel logs",".txt .dtl"),("All files","*.*"))) # samotny dialog na vyber okna
         return file_path
 
     # beh programu
