@@ -25,14 +25,18 @@ def CalcYLim():
     yMax = 0 #max
     for line in trendsSubplots:
         if(line.get_visible()):
-            yMin = min(yMin,min(line.get_ydata()))
-            yMax = max(yMax,max(line.get_ydata()))
+            try:
+                yMin = min(yMin,min(line.get_ydata()))
+                yMax = max(yMax,max(line.get_ydata()))
+            except ValueError: #do not change yMin or yMax
+                yMin = yMin
+                yMax = yMax
 
     if(yMin == yMax):
         if(yMin == 0):
             yMax = yMin+1 # zeros, let's make it to <0,1>
         else:
-            yMax = max(yMin * 1.01,) # different values, relative might be better if not zero
+            yMax = yMin * 1.01 # different values, relative might be better if not zero
 
     relScaleExpandUpDown = 0.02 * (yMax-yMin) # 2% of the range bottom and up
 
@@ -146,3 +150,8 @@ def plot_all(singleTrend=True):
             trendNumber+=1
             print('Drawing trend '+str(trendNumber)+': '+varName1)
             # sprava do konzoly a pocitadlo
+
+# closes the file
+def close_plot():
+    print('Closing trends...')
+    plt.close()

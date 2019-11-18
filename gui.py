@@ -1,6 +1,7 @@
 # gui and config processing
 
 # gui
+import os
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
@@ -20,7 +21,7 @@ class AppGUI:
     # languages
     languageChoices = ["English","Polski"] #,"Русский"
     languageCodes = ["EN","PL"]
-    openedFileName = '' #actually opened filename
+    openedFileNames = [] #actually opened filename
 
     paddingNSWE = 20 # default padding on all sides
 
@@ -45,6 +46,8 @@ class AppGUI:
 
             self.text_swapWords32bitVars = "Użyj Middle-endian dla zmiennych 32-bitowych"
             self.text_language = "Język:"
+            self.text_alreadyOpened = "Ten plik został już otwarty!"
+            self.text_alert = "Ostrzeżenie"
         else:
             # button texts
             self.text_openButton = "Open file"
@@ -55,6 +58,8 @@ class AppGUI:
 
             self.text_swapWords32bitVars = "Use Middle-endian for 32-bit variables"
             self.text_language = "Language:"
+            self.text_alreadyOpened = "This file has already been opened!"
+            self.text_alert = "Warning"
 
     # vymeni texty
     def ChangeTexts(self):
@@ -120,16 +125,31 @@ class AppGUI:
         self.copyrightInfoLabel = tk.Label(self.window, text=vs.appCopyrightInfo)
         self.copyrightInfoLabel.grid(row=5,column=0,columnspan=2,pady=self.paddingNSWE,sticky=tk.S)
 
+    def EnableOrDisableAddFile(self):
+        if('.dtl' in self.openedFileNames[0]):
+            self.addButton.configure(state=tk.NORMAL)
+        else:
+            self.addButton.configure(state=tk.DISABLED)
+
     # kliknutie na openButton
     def openButton_click(self):
         common_vars.ClearVars() # erases all data before opening new file
-        self.UpdateUseMiddleEndianVars() # updates the variable
-        self.openedFileName = self.OpenFileDialogGetFileName() # open dialog
-        ppt.OpenTrendFile(self.openedFileName) #opens file
+        self.openedFileNames.clear() # clear list of opened files
+        self.UpdateUseMiddleEndianVars() # updates the middle endian variable, no bind function
+
+        openFile = self.OpenFileDialogGetFileName()
+        self.openedFileNames.append(openFile) # add file to list of opened files
+        self.EnableOrDisableAddFile() # can another file be appended?, digable/enable button
+        ppt.OpenTrendFile(openFile) #opens file
 
     # kliknutie na addButton
     def addButton_click(self):
-        pass # ToDo
+        addFile = self.AddFileDialogGetFileName()
+        if addFile in self.openedFileNames:
+            tk.messagebox.showinfo(self.text_alert, self.text_alreadyOpened) # warning that it has been already opened
+        else: # OK
+            self.openedFileNames.append(addFile) # add file
+            ppt.AddTrendFile(addFile) #opens file and draws everything
 
     # zmena jazyka
     def languageComboBox_change(self, event=None):
@@ -153,6 +173,12 @@ class AppGUI:
     # otvori dialog a vrati nazov suboru
     def OpenFileDialogGetFileName(self):
         file_path = filedialog.askopenfilename(filetypes = (("Supported HMI panel logs",".txt .dtl"),("All files","*.*"))) # samotny dialog na vyber okna
+        return file_path
+
+    # doplnenie suboru DTL
+    def AddFileDialogGetFileName(self):
+        baseFileName = os.path.basename(self.openedFileNames[0]) #first file opened is taken
+        file_path = filedialog.askopenfilename(filetypes = (("Weintek DTL file for same day",baseFileName),("All files","*.*"))) # samotny dialog na vyber okna
         return file_path
 
     # beh programu

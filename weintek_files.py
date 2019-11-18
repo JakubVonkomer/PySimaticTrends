@@ -1,4 +1,5 @@
 ﻿# support for weintek panel .dtl logs
+import os # paths, basename
 import struct # podpora binarnych struktur
 #import sys
 from datetime import datetime # datumove funkcie
@@ -6,8 +7,6 @@ from datetime import datetime # datumove funkcie
 import common_vars
 
 ## globalne premenne`
-nrVars = 0 # pocet premennych
-
 formatStructRead = '' # format struktury na citanie v pythone, bude stavany priebezne
 formatStructType = '' # format struktury vyznamu dat, bude stavany priebezne
 
@@ -45,21 +44,35 @@ def ProcessDTLValue(datastruct, index):
     fsIndex = index # timestamp a ms su prve polozky struktury, prve data su na indexe 2
 
     # multiple variable files can be middle endian only
-    if(nrVars > 1 and common_vars.useMiddleEndianFor32bitVars):
+    if(common_vars.useMiddleEndianFor32bitVars):
         if(formatStructType[fsIndex] == 'f' or formatStructType[fsIndex] == 'L' or formatStructType[fsIndex] == 'l'): # ak je to float, alebo (u)int32
             item1 = swapWordsInt32(item1)
             
     # recast as float
     if(formatStructType[fsIndex] == 'f'):
         item1 = reinterpretAsFloat(item1)
+
+    # recast hex number string as int number
+    if(formatStructType[fsIndex] == 's'):
+        try:
+            item1 = int(item1,16) # prekonvertovanie na int
+        except Exception:
+            item1 = 0 # default bude 0
                     
     return item1
 
+# makes short prefix from the directory name, 'log_GF4' to 'GF4'...
+def MakeShortFileDescription(filename):
+    dirname = os.path.basename(os.path.dirname(filename))
+    shortName = dirname.replace('log_','') # removing log_ from the string
+    return shortName
 
 # nacitanie DTL suboru z panelu weintek
 def OpenWeintekDtlFile(filename):
 
-    global formatStructType, formatStructRead, nrVars # tieto globalne premenne sa tu modifikuju
+    global formatStructType, formatStructRead # tieto globalne premenne sa tu modifikuju
+
+    nrVars = 0 # pocet premennych
 
     #Otvorenie suboru
     try:
@@ -70,6 +83,9 @@ def OpenWeintekDtlFile(filename):
     except Exception as e:
         print(e)
         return False
+
+    # short description of files
+    shortFileDescription = MakeShortFileDescription(filename) # short file description for making difference between similar files where more files are open
 
     # binarne citanie suboru
 
@@ -99,17 +115,21 @@ def OpenWeintekDtlFile(filename):
     for i in range(0,nrVars):
         varType = struct.unpack('<LL' , fp.read(8)) # typ premennej, 6 je float, 4 unsigned int
         #print('Typ premennej ', varType, ': ', DTL_TYPES[varType[0]][0],'Word length: ',varType[1])   
-        formatStructRead += DTL_TYPES[varType[0]][2] # typ ktory sa cita zo suboru
-        formatStructType += DTL_TYPES[varType[0]][1] # skutocny vyznam dat
+        if(varType[0] == 7): # string
+            formatStructRead += str(varType[1]*2)+'s' # typ ktory sa cita zo suboru
+            formatStructType += 's' # skutocny vyznam dat, string je iba s
+        else:
+            formatStructRead += DTL_TYPES[varType[0]][2] # typ ktory sa cita zo suboru
+            formatStructType += DTL_TYPES[varType[0]][1] # skutocny vyznam dat
 
     #print('Format Read: ',formatStructRead)
     #print('Format Type: ',formatStructType)
-    formatLength = struct.calcsize(formatStructRead)
-    #print('FormatLength: ', formatLength)
 
     # kontrola stringu 'name'    
     nameCheck = struct.unpack('<4s' ,  fp.read(4))
     #print('name = ',nameCheck)
+
+    nrVarsBefore = len(common_vars.varNames) # size of array before
 
     # zobratie nazvov
     for i in range(0,headerInfo[0]):
@@ -117,7 +137,7 @@ def OpenWeintekDtlFile(filename):
         nameRawData = fp.read(nameLength[0])
         name = nameRawData.decode('utf-8')
         # pridaj zaznam a vytvor polia
-        common_vars.AddNewVarName(name)
+        common_vars.AddNewVarName(shortFileDescription+":"+name)
         #print('Length: ',nameLength[0], 'Name: ',name)
 
     # nacitanie samotnych dat
@@ -143,7 +163,7 @@ def OpenWeintekDtlFile(filename):
         
         # prejdenie jednotlivych dat v jednom riadku struktury
         for j in range(0,nrVars):
-            actualName = common_vars.varNames[j] # prve dva stlpce su datetime a ms, preto posuvame #TU JE PROBLEM, FIXME
+            actualName = common_vars.varNames[nrVarsBefore+j] # prve dva stlpce su datetime a ms, preto posuvame #TU JE PROBLEM, FIXME
             common_vars.dateTimes[actualName].append(timestamp)
             value = ProcessDTLValue(data,j+2) #prve hodnoty v data strukture su od indexu 2
             common_vars.varValues[actualName].append(value)
