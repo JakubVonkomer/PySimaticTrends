@@ -78,7 +78,11 @@ class AppGUI:
         #self.window.geometry("312x324") # size of the window width:- 500, height:- 375
         self.window.resizable(0, 0) # this prevents from resizing the window
         self.window.title(vs.appTitle)
-        self.window.iconbitmap("images/vonsch.ico") # ikona
+
+        #icon file
+        iconFile  = "images/vonsch.ico"
+        if(os.path.exists(iconFile)):
+            self.window.iconbitmap(iconFile) # ikona
 
         self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
 
