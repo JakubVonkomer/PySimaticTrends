@@ -4,3 +4,6 @@ log_files/
 tests/
 python/
 appconfig.ini
+build/
+dist/
+main.spec
