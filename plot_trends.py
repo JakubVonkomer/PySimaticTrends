@@ -70,13 +70,13 @@ def TranslateTagName(tagName1):
         return tagName1
 
 # vykreslenie vsetkych grafov
-def plot_all(singleTrend=True):
+def plot_all(filename):
     global trendsSubplots, labels, ax, fig # modifikujeme globalne premenne, vyuziva ich ControlCheckFunc
 
     ClearPlotGlobals() # vymaze stare data
 
     trend_number = 1
-    if(singleTrend): # jeden spolocny graf
+    if(True): # jeden spolocny graf, natvrdo nastavene!!!
  
         fig, ax = plt.subplots() # fig treba lebo subplots vracia tuple
         trendNumber = 0
@@ -93,7 +93,7 @@ def plot_all(singleTrend=True):
             #break
 
         plt.subplots_adjust(left=0.28) #odkade nalavo zacina graf, treba nechat offset na legendu
-        plt.suptitle('Trends')
+        plt.suptitle('Trends for '+filename)
         plt.xlabel('Time')
         plt.ylabel('Values')
 
@@ -127,6 +127,7 @@ def plot_all(singleTrend=True):
             if(x_new <= 0):
                 x_new = 0.01
             check.labels[i].set_x(x_new)
+            check.set_active(i) # default bude nezobrazene, budu sa zaskrtavat iba tie potrebne
         
         #maximalizacia grafu na cele okno
         # pouzivam rady z https://stackoverflow.com/questions/12439588/how-to-maximize-a-plt-show-window-using-python
@@ -137,19 +138,6 @@ def plot_all(singleTrend=True):
         #grid
         ax.grid(b=True, which='both', color='#cccccc', linestyle='--')
         plt.show()
-    else: # viac grafov
-        trendNumber = 0
-        for varName1 in varNames:
-            fig = plt.figure(trendNumber)  # an empty figure with no axes
-            plt.suptitle('Trend of '+varName1)  # Add a title so we know which it is
-            plt.step(dateTimes[varName1], varValues[varName1])
-            plt.xlabel('Time')
-            plt.ylabel('Value of '+varName1)
-            _=plt.xticks(rotation=45)   
-            fig.show() #umozni vykreslit trendy paralelne, plt.show() by vykreslilo druhy az po zavreti prveho
-            trendNumber+=1
-            print('Drawing trend '+str(trendNumber)+': '+varName1)
-            # sprava do konzoly a pocitadlo
 
 # closes the file
 def close_plot():

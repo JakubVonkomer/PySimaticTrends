@@ -10,7 +10,8 @@ import plot_trends as plot
 
 #detekcia typu suboru
 def OpenTrendFile(filename):
-    name, ext = os.path.splitext(filename)
+    name, ext = os.path.splitext(filename) #need to know the extension
+    basename = os.path.basename(filename) # only the basename of the file, not full path
     resultOK = False
     if(ext == '.txt'): # Simatic Basic Panel TXT file
         resultOK = sf.OpenSimaticTXTFile(filename)
@@ -21,7 +22,7 @@ def OpenTrendFile(filename):
 
     if(resultOK):
         plot.close_plot() # close plot first
-        plot.plot_all(True) # vykresli grafy
+        plot.plot_all(basename) # vykresli grafy
 
 # makes short prefix from the directory name, 'log_GF4' to 'GF4'...
 def AddTrendFile(filename):
