@@ -2,6 +2,7 @@
 
 # gui
 import os
+import sys
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
@@ -83,6 +84,10 @@ class AppGUI:
         iconFile  = "images/vonsch.ico"
         if(os.path.exists(iconFile)):
             self.window.iconbitmap(iconFile) # ikona
+        else: # icon for PyInstaller package
+            fullIconPath = os.path.join(sys._MEIPASS, iconFile)
+            if(os.path.exists(fullIconPath)):
+                self.window.iconbitmap(fullIconPath) 
 
         self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
 
