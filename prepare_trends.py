@@ -27,6 +27,7 @@ def OpenTrendFile(filename):
 # makes short prefix from the directory name, 'log_GF4' to 'GF4'...
 def AddTrendFile(filename):
     name, ext = os.path.splitext(filename)
+    basename = os.path.basename(filename) # only the basename of the file, not full path
 
     if(ext == '.dtl'): # Weintek binary DTL files
         resultOK = wf.OpenWeintekDtlFile(filename)
@@ -37,4 +38,4 @@ def AddTrendFile(filename):
     if(resultOK):
         plot.close_plot() # closes old plot first
         print('Closing old plot and redrawing')
-        plot.plot_all(True)
+        plot.plot_all(basename)
