@@ -6,7 +6,7 @@ import version as vs
 
 targetFilename = vs.appTitle.replace('.','_')+'.exe'
 
-pathToPyinstaller = "C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\Scripts\pyinstaller.exe"
+pathToPyinstaller = 'C:\\Users\\jvonk\\AppData\\Roaming\\Python\\Python39\\Scripts\\pyinstaller.exe'
 args = [pathToPyinstaller,'--onefile', '--add-data=images\\vonsch.ico;images' ,'main.py']
 
 print('Building the app...')
